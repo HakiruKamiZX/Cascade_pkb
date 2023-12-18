@@ -4,23 +4,7 @@ using LinearAlgebra
 
 
 #Mean dengan euclidean
-function euclidean_mean(data_frame)
-    means = Float64[]
-    for col in eachcol(data_frame)
-        col_values = coalesce.(Float64.(col), 0.0)
-        n = length(col_values)
-        
-        # Menghitung ruclidean per kolom
-        euclidean_mean_val = mean(col_values)
 
-        if n == 0
-            push!(means, NaN)
-        else
-            push!(means, euclidean_mean_val)
-        end
-    end
-    return means
-end
 
 #Membagi data menjadi kelas
 function calculate_class_means(data_frame)
