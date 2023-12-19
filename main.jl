@@ -1,16 +1,17 @@
 using Serialization
 using DataFrames
 using LinearAlgebra
+using Statistics
 
 
 #Mean dengan euclidean
 function euclidean_mean(data_frame)
     means = Float64[]
-    for col in eachcol(data_frame)
+    for col in eachcol(data_frame[:, 1:end-1])
         col_values = coalesce.(Float64.(col), 0.0)
         n = length(col_values)
-        
-        # Menghitung ruclidean per kolom
+
+        # Menghitung euclidean per kolom
         euclidean_mean_val = mean(col_values)
 
         if n == 0
@@ -45,6 +46,13 @@ function print_mean_for_class(class_label, means)
     println(means)
 end
 
+function custom_mean(data)
+    weights = 1:length(data)
+    weighted_sum = sum(data .* weights)
+    total_weight = sum(weights)
+    return weighted_sum / total_weight
+end
+
 #menghitung mean dengan cascade
 function cascade_classify_mean(data_frame, classifier)
     unique_classes = unique(data_frame[!, end])
@@ -53,11 +61,13 @@ function cascade_classify_mean(data_frame, classifier)
     for class_label in unique_classes
         class_indices = findall(x -> x == class_label, data_frame[!, end])
         class_data = data_frame[class_indices, 1:end-1]
-        
-        classified_indices = classifier.(eachrow(class_data))
+
+        # Apply classifier to each row
+        classified_indices = map(classifier, eachrow(class_data))
         classified_data = class_data[classified_indices, :]
-        
-        means = custom_mean(classified_data)
+
+        # Calculate mean for the classified data
+        means = euclidean_mean(classified_data)
         means_by_class[class_label] = means
     end
 
